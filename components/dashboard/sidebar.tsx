@@ -1,17 +1,17 @@
 "use client"
 
 import { useState } from "react"
-import { LayoutGrid, FileText, LinkIcon, Activity, Settings, UploadIcon, Lock, Star, Share2, Crown, Image as ImageIcon, ChevronLeft, ChevronRight, Menu } from "lucide-react"
+import { LayoutGrid, FileText, LinkIcon, Activity, Settings, UploadIcon, Lock, Star, Crown, ChevronLeft, ChevronRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface SidebarProps {
     activeTab: string
     onNavigate: (tab: string) => void
-    isFileToURLAllowed: boolean
-    isChatbotAllowed: boolean
+    isFileToURLAllowed?: boolean
+    isChatbotAllowed?: boolean
 }
 
-export function Sidebar({ activeTab, onNavigate, isFileToURLAllowed }: SidebarProps) {
+export function Sidebar({ activeTab, onNavigate }: SidebarProps) {
     const [isCollapsed, setIsCollapsed] = useState(false)
 
     const navItems = [
@@ -19,8 +19,6 @@ export function Sidebar({ activeTab, onNavigate, isFileToURLAllowed }: SidebarPr
         { id: "upload", label: "Upload Files", icon: UploadIcon },
         { id: "files", label: "My Files", icon: FileText },
         { id: "starred", label: "Starred Files", icon: Star },
-        ...(isFileToURLAllowed ? [{ id: "file-to-url", label: "File to URL", icon: Share2 }] : []),
-        { id: "bg-remove", label: "Remove Bg", icon: ImageIcon },
         { id: "vault", label: "Secret Vault", icon: Lock },
         { id: "shared-links", label: "Shared Links", icon: LinkIcon },
         { id: "plans", label: "Plans & Pricing", icon: Crown },

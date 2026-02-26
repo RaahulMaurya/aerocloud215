@@ -11,15 +11,14 @@ import { ActivityLog } from "@/components/dashboard/activity-log"
 import { SettingsPanel } from "@/components/dashboard/settings-panel"
 import { FileUpload } from "@/components/dashboard/file-upload"
 import { SharedLinksPanel } from "@/components/dashboard/shared-links-panel"
-import { FileToURL } from "@/components/dashboard/file-to-url"
-import { BgRemoval } from "@/components/dashboard/bg-removal"
+
 import { SecretVault } from "@/components/dashboard/secret-vault"
 import { AIChatbotDialog } from "@/components/dashboard/ai-chatbot-dialog"
 import { PlansDisplay } from "@/components/dashboard/plans-display"
 import { StorageFullModal } from "@/components/storage-full-modal"
 
 import { useAuth } from "@/contexts/auth-context"
-import { LayoutGrid, FileText, LinkIcon, Activity, Settings, UploadIcon, Lock, Star, Share2, Smartphone, Crown, Image as ImageIcon } from "lucide-react"
+import { LayoutGrid, FileText, LinkIcon, Activity, Settings, UploadIcon, Lock, Star, Crown } from "lucide-react"
 import { doc, setDoc } from "firebase/firestore"
 import { db } from "@/firebase/config"
 
@@ -124,9 +123,6 @@ export default function Dashboard() {
 
               {activeTab === "starred" && <StarredFiles />}
 
-              {activeTab === "file-to-url" && <FileToURL />}
-
-              {activeTab === "bg-remove" && <BgRemoval />}
 
               {activeTab === "vault" && <SecretVault key={refreshTrigger} />}
 

@@ -95,6 +95,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [is2FAVerified, setIs2FAVerified] = useState(false)
   // Holds the unsubscribe fn for the user doc real-time listener
   const userDocUnsubRef = React.useRef<(() => void) | null>(null)
+  // Track whether we've done the initial count sync for this session
+  const countSyncedRef = React.useRef(false)
 
   // Subscribe to user document in real-time (so mobile changes propagate to web immediately)
   const subscribeToUserData = (uid: string) => {
@@ -103,6 +105,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       userDocUnsubRef.current()
       userDocUnsubRef.current = null
     }
+    // Reset sync flag for new session
+    countSyncedRef.current = false
 
     const userDocRef = doc(db, "users", uid)
     const unsub = onSnapshot(userDocRef, async (userDoc) => {
@@ -122,17 +126,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       data.plan = data.plan ?? data.subscriptionPlan ?? "free"
 
-      // Initialize filesCount server-side if missing (one-time migration)
-      if (data.filesCount === undefined) {
+      // Always reconcile filesCount from the real collection on first load of each session.
+      // This fixes stale/wrong counts stored in the user document.
+      if (!countSyncedRef.current) {
+        countSyncedRef.current = true
         try {
           const filesColl = collection(db, `files/${uid}/userFiles`)
           const snapshot = await getCountFromServer(filesColl)
-          data.filesCount = snapshot.data().count
-          await updateDoc(userDocRef, { filesCount: data.filesCount })
-          console.log("Initialized filesCount to:", data.filesCount)
+          const realCount = snapshot.data().count
+          data.filesCount = realCount
+          // Write back only if it differs from what's stored
+          if (userDoc.data()?.filesCount !== realCount) {
+            await updateDoc(userDocRef, { filesCount: realCount })
+            console.log("Reconciled filesCount:", userDoc.data()?.filesCount, "→", realCount)
+          }
         } catch (error) {
-          console.error("Error initializing filesCount:", error)
-          data.filesCount = 0
+          console.error("Error reconciling filesCount:", error)
+          data.filesCount = data.filesCount ?? 0
         }
       }
 
