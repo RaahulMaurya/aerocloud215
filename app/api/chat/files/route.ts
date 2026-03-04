@@ -1,7 +1,9 @@
-import { streamText, convertToModelMessages } from 'ai'
+import { streamText } from 'ai'
 import { google } from '@ai-sdk/google'
-import { listUserFilesAdmin, calculateTotalStorageAdmin } from '@/lib/storage-admin'
+import { listUserFilesAdmin } from '@/lib/storage-admin'
 import { getAdminDb } from '@/lib/firebase-admin'
+
+export const maxDuration = 30 // Allow streaming responses up to 30 seconds
 
 export async function POST(req: Request) {
   try {
@@ -14,7 +16,7 @@ export async function POST(req: Request) {
     const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY
     if (!apiKey) {
       console.error('Missing GOOGLE_GENERATIVE_AI_API_KEY environment variable')
-      return new Response(JSON.stringify({ error: 'Service configuration error' }), {
+      return new Response(JSON.stringify({ error: 'AI service not configured. Please contact support.' }), {
         status: 500,
         headers: { 'Content-Type': 'application/json' }
       })
@@ -27,7 +29,7 @@ export async function POST(req: Request) {
       })
     }
 
-    // 1. Parallelize fetching: Files and User Data (Still fetch for verification/backup)
+    // 1. Parallelize fetching: Files and User Data
     const [files, userDoc] = await Promise.all([
       listUserFilesAdmin(userId).catch(e => {
         console.error("Error fetching files:", e)
@@ -42,7 +44,6 @@ export async function POST(req: Request) {
     const dbUserData = userDoc?.data() || {}
 
     // Merge Contexts: Prioritize Client for Plan/Name (Sync with UI), DB for strict limits if needed
-    // For this chatbot helper, we trust the client context for the "User Persona" to match what they see.
     const finalUserData = {
       ...dbUserData,
       ...(userContext || {})
@@ -128,19 +129,18 @@ export async function POST(req: Request) {
     - Respond quickly.
     `
 
-    const modelMessages = await convertToModelMessages(messages)
-
     const result = await streamText({
       model: google('gemini-2.0-flash'),
       system: systemPrompt,
-      messages: modelMessages,
+      messages,
     })
 
     return result.toUIMessageStreamResponse()
-  } catch (error) {
-    console.error('Chat API error:', error)
+  } catch (error: any) {
+    console.error('Chat API error:', error?.message || error)
     return new Response(JSON.stringify({ error: 'Internal Server Error' }), {
       status: 500,
+      headers: { 'Content-Type': 'application/json' }
     })
   }
 }
