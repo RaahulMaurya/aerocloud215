@@ -3,6 +3,8 @@
 import { X, Download, ExternalLink, Music } from "lucide-react"
 import { type FileMetadata, getFilePreviewType } from "@/lib/storage"
 import { useState } from "react"
+import { ref, getDownloadURL } from "firebase/storage"
+import { storage } from "@/lib/firebase"
 
 export function FilePreviewModal({ file, onClose }: { file: FileMetadata; onClose: () => void }) {
   const previewType = getFilePreviewType(file.type)

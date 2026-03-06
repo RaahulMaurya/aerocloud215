@@ -15,8 +15,15 @@ export async function GET(req: NextRequest) {
         const filePath = searchParams.get('path')
         const fileName = searchParams.get('name') || 'download'
 
+        const fallbackUrl = searchParams.get('fallbackUrl')
+
         if (!filePath) {
-            return new Response(JSON.stringify({ error: 'Missing path parameter' }), {
+            // If path is missing but we have a fallback URL, just redirect to it immediately
+            if (fallbackUrl) {
+                return Response.redirect(fallbackUrl, 302)
+            }
+
+            return new Response(JSON.stringify({ error: 'Missing path parameter and fallback URL' }), {
                 status: 400,
                 headers: { 'Content-Type': 'application/json' }
             })
@@ -41,15 +48,20 @@ export async function GET(req: NextRequest) {
             // Redirect to the signed URL — browser will download directly
             return Response.redirect(signedUrl, 302)
         } catch (adminErr: any) {
-            console.warn('[Download API] Admin SDK failed, using client download URL:', adminErr?.message)
+            console.warn('[Download API] Admin SDK failed, using fallback URL:', adminErr?.message)
 
-            // Fallback: Use the Firebase Storage REST API URL format directly
-            // This works if the file has public access or the token is valid
-            const bucket = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || 'cloudvault-cadca.firebasestorage.app'
-            const encodedPath = encodeURIComponent(decodedPath)
-            const fallbackUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodedPath}?alt=media`
+            // Use the fallbackUrl passed from the client if available (has the original token)
+            // Or construct a raw Firebase Storage REST API URL (requires public access or token)
+            const fallbackUrl = searchParams.get('fallbackUrl')
 
-            return Response.redirect(fallbackUrl, 302)
+            if (fallbackUrl) {
+                return Response.redirect(fallbackUrl, 302)
+            } else {
+                const bucket = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || 'cloudvault-cadca.firebasestorage.app'
+                const encodedPath = encodeURIComponent(decodedPath)
+                const rawUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodedPath}?alt=media`
+                return Response.redirect(rawUrl, 302)
+            }
         }
     } catch (error: any) {
         console.error('[Download API] Error:', error?.message || error)

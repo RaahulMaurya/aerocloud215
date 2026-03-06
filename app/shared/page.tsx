@@ -86,12 +86,29 @@ function SharedLinkContent() {
     }
 
     const handleDownload = () => {
-        if (!downloadUrl) return
+        if (!downloadUrl && !storagePath) return
         setDownloading(true)
-        // The fileUrl already has the Firebase download token embedded.
-        // Directly opening it avoids CORS/fetch issues entirely.
-        // The browser will download or preview it based on content-type.
-        window.open(downloadUrl, '_blank', 'noopener,noreferrer')
+
+        // If storagePath is missing (older links), try to extract it from the downloadUrl
+        let finalStoragePath = storagePath
+        if (!finalStoragePath && downloadUrl) {
+            try {
+                // Example URL: https://firebasestorage.googleapis.com/v0/b/bucket/o/uploads%2Fuser%2Ffile.pdf?alt=media
+                const urlObj = new URL(downloadUrl)
+                const pathParts = urlObj.pathname.split('/o/')
+                if (pathParts.length > 1) {
+                    finalStoragePath = decodeURIComponent(pathParts[1])
+                }
+            } catch (e) {
+                console.warn("Could not extract storage path from URL")
+            }
+        }
+
+        // Route through our download API to get a fresh signed URL (avoids CORS and expired tokens)
+        // If Admin SDK fails on the backend, it will use the tokenized fallbackUrl we pass
+        const apiUrl = `/api/download?path=${encodeURIComponent(finalStoragePath || "")}&name=${encodeURIComponent(link.fileName)}&fallbackUrl=${encodeURIComponent(downloadUrl || "")}`
+        window.open(apiUrl, '_blank', 'noopener,noreferrer')
+
         setTimeout(() => setDownloading(false), 1500)
     }
 

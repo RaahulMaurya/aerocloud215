@@ -260,8 +260,24 @@ export function FilesList() {
     return foldersList.sort((a, b) => (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0))
   }
 
-  const handleDownload = (file: FileMetadata) => {
-    window.open(file.url, "_blank")
+  const handleDownload = async (file: FileMetadata) => {
+    try {
+      // Always generate a fresh download URL to avoid expired tokens
+      const freshUrl = await getDownloadURL(ref(storage, file.fullPath))
+      window.open(freshUrl, "_blank")
+    } catch (error) {
+      console.error("Error getting fresh download URL:", error)
+      // Fallback: try the stored URL (may work if token is still valid)
+      if (file.url) {
+        window.open(file.url, "_blank")
+      } else {
+        toast({
+          title: "Download failed",
+          description: "Could not generate download URL. Please try again.",
+          variant: "destructive",
+        })
+      }
+    }
   }
 
   const handlePreview = (file: FileMetadata) => {

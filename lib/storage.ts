@@ -7,6 +7,17 @@ import { handleError, logError, type AppError } from "@/lib/error-handler"
 import { sanitizeFileName, sanitizeFolderName, isSuspiciousFileName } from "@/lib/input-sanitizer"
 import { appCache, invalidateUserCache, CACHE_KEYS } from "@/lib/cache-manager"
 
+// Generate a fresh download URL for a file (bypasses stale/expired tokens)
+export async function getFreshDownloadURL(storagePath: string): Promise<string> {
+  try {
+    const fileRef = ref(storage, storagePath)
+    return await getDownloadURL(fileRef)
+  } catch (error) {
+    console.error("Error getting fresh download URL for:", storagePath, error)
+    throw error
+  }
+}
+
 // Recalculate and save total storage used by user
 export async function recalculateUserStorage(userId: string): Promise<number> {
   // Try to use a faster approach if there are many files.
