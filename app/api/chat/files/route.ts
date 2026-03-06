@@ -10,11 +10,11 @@ export async function POST(req: Request) {
 
     console.log('[Chat API] Called with userId:', userId)
 
-    // Use environment variable ONLY to prevent leaking keys to the public repository
-    const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY
+    // Check both environment variable names since users often use GOOGLE_API_KEY instead of the longer version
+    const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GOOGLE_API_KEY
 
     if (!apiKey) {
-      console.error('[Chat API] Missing GOOGLE_GENERATIVE_AI_API_KEY')
+      console.error('[Chat API] Missing GOOGLE_GENERATIVE_AI_API_KEY or GOOGLE_API_KEY')
       return new Response(JSON.stringify({ error: 'AI service not configured.' }), {
         status: 500,
         headers: { 'Content-Type': 'application/json' }
