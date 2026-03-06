@@ -1,8 +1,10 @@
 {
   "hosting": {
     "source": ".",
+    "frameworksBackend": {},
     "ignore": [
       "firebase.json",
+      "functions/**",
       "**/.*",
       "**/node_modules/**"
     ]

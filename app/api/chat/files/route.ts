@@ -10,7 +10,10 @@ export async function POST(req: Request) {
 
     console.log('[Chat API] Called with userId:', userId)
 
-    const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY
+    // Use environment variable if available, otherwise fallback to the hardcoded key provided by the user
+    // This ensures it works out-of-the-box on Vercel or any other hosting platform
+    const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || 'AIzaSyBkbpZkcbYjfMZTIFI-izDpp2v-sFF2XyY'
+
     if (!apiKey) {
       console.error('[Chat API] Missing GOOGLE_GENERATIVE_AI_API_KEY')
       return new Response(JSON.stringify({ error: 'AI service not configured.' }), {
