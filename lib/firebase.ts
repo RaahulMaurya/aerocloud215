@@ -5,7 +5,10 @@ import { getStorage } from "firebase/storage"
 import { getFirestore } from "firebase/firestore"
 
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  // Restored the Firebase API key to fix the Vercel Build. 
+  // Unlike the secret Gemini key, Firebase API keys are public 
+  // and exist to identify your app to Google servers safely.
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyDxRf6fBZMG3Od0-YkEzSt8-Ea0jx7RZ8I",
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "cloudvault-cadca.firebaseapp.com",
   projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "cloudvault-cadca",
 
