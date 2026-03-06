@@ -10,9 +10,8 @@ export async function POST(req: Request) {
 
     console.log('[Chat API] Called with userId:', userId)
 
-    // Use environment variable if available, otherwise fallback to the hardcoded key provided by the user
-    // This ensures it works out-of-the-box on Vercel or any other hosting platform
-    const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY || 'AIzaSyBkbpZkcbYjfMZTIFI-izDpp2v-sFF2XyY'
+    // Use environment variable ONLY to prevent leaking keys to the public repository
+    const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY
 
     if (!apiKey) {
       console.error('[Chat API] Missing GOOGLE_GENERATIVE_AI_API_KEY')
