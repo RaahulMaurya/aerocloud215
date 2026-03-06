@@ -1,0 +1,70 @@
+# Operation 1: List all questions visible to the public
+query ListAllQuestions @auth(level: PUBLIC, insecureReason: "This operation is safe to expose to the public") {
+  questions(orderBy: [{createdAt: DESC}]) {
+    id
+    title
+    content
+    createdAt
+    author {
+      username
+    }
+    tags_via_QuestionTag {
+      name
+    }
+  }
+}
+
+# Operation 2: Get a specific question by its ID (accessible to any logged-in user)
+query GetQuestionById($questionId: UUID!) @auth(level: USER, insecureReason: "This operation is safe to expose to all logged in users.") {
+  question(id: $questionId) {
+    id
+    title
+    content
+    createdAt
+    author {
+      username
+      id
+    }
+    answers_on_question {
+      id
+      content
+      createdAt
+      author {
+        username
+      }
+    }
+    tags_via_QuestionTag {
+      id
+      name
+    }
+  }
+}
+
+# Operation 3: Create a new question (only for logged-in users)
+mutation CreateQuestion($title: String!, $content: String!) @auth(level: USER) {
+  question_insert(
+    data: {
+      title: $title,
+      content: $content,
+      authorId_expr: "auth.uid",
+      createdAt_expr: "request.time"
+    }
+  ) {
+    id
+  }
+}
+
+# Operation 4: Upvote a question or an answer (only for logged-in users)
+mutation CreateVote($questionId: UUID, $answerId: UUID, $voteType: String!) @auth(level: USER) {
+  vote_insert(
+    data: {
+      userId_expr: "auth.uid",
+      voteType: $voteType,
+      createdAt_expr: "request.time",
+      questionId: $questionId,
+      answerId: $answerId
+    }
+  ) {
+    id
+  }
+}

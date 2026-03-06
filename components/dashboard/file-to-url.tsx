@@ -188,7 +188,7 @@ export function FileToURL() {
           userPlan,
         )
 
-        const fullShareLink = `${window.location.origin}/shared/${shareResult.id}`
+        const fullShareLink = `${window.location.origin}/shared?id=${encodeURIComponent(shareResult.id)}`
 
         // Generate QR code
         let qrCode = ""

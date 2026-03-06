@@ -1,20 +1,26 @@
 'use client'
 
 import React, { useState, useRef, useEffect } from 'react'
-import { X, Send, Loader, Minimize2, Trash2, Plus, LogOut, Crown, Sparkles, Lock } from 'lucide-react'
+import { Send, Loader, Minimize2, Trash2, Plus, LogOut, Crown, Sparkles, Lock } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
-import { useChat } from '@ai-sdk/react'
-import { DefaultChatTransport } from 'ai'
+
+interface Message {
+  role: 'user' | 'assistant'
+  content: string
+}
 
 interface AIChatbotDialogProps {
   isOpen: boolean
   onClose: () => void
+  onOpen: () => void
 }
 
-export function AIChatbotDialog({ isOpen, onClose, onOpen }: AIChatbotDialogProps & { onOpen: () => void }) {
+export function AIChatbotDialog({ isOpen, onClose, onOpen }: AIChatbotDialogProps) {
   const { userData } = useAuth()
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const [input, setInput] = useState('')
+  const [messages, setMessages] = useState<Message[]>([])
+  const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isMinimized, setIsMinimized] = useState(false)
   const [showConfirmDelete, setShowConfirmDelete] = useState(false)
@@ -22,40 +28,71 @@ export function AIChatbotDialog({ isOpen, onClose, onOpen }: AIChatbotDialogProp
 
   const isPremium = userData?.subscriptionPlan === 'pro' || userData?.subscriptionPlan === 'enterprise'
 
-  const { messages, sendMessage, status } = useChat({
-    transport: new DefaultChatTransport({
-      api: '/api/chat/files',
-      body: {
-        userId: userData?.uid,
-        userContext: isPremium ? {
-          name: userData?.displayName,
-          email: userData?.email,
-          plan: userData?.subscriptionPlan || userData?.plan || 'pro', // Fallback to 'pro' if isPremium is true
-          planExpiry: userData?.planExpiry,
-          storageUsed: userData?.storageUsed,
-          maxStorage: userData?.maxStorage
-        } : undefined
-      },
-    }),
-  })
-
-  const isLoading = (status as string) === 'submitted' || (status as string) === 'streaming'
-
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  const handleSendMessage = (e: React.FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!input.trim() || isLoading || !userData?.uid || !isPremium) return
-    setError(null)
-    sendMessage({ text: input })
+
+    const userMessage = input.trim()
     setInput('')
+    setError(null)
+    setIsLoading(true)
+
+    const newMessages: Message[] = [...messages, { role: 'user', content: userMessage }]
+    setMessages(newMessages)
+
+    try {
+      const res = await fetch('/api/chat/files', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: newMessages,
+          userId: userData.uid,
+          userContext: isPremium ? {
+            displayName: userData?.displayName,
+            email: userData?.email,
+            subscriptionPlan: userData?.subscriptionPlan || 'pro',
+            planExpiry: userData?.planExpiry,
+            storageUsed: userData?.storageUsed,
+            maxStorage: userData?.maxStorage
+          } : undefined
+        })
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to get response')
+      }
+
+      setMessages(prev => [...prev, { role: 'assistant', content: data.text }])
+    } catch (err: any) {
+      console.error('Chat error:', err)
+      setError(err.message || 'Something went wrong. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
-  const handleNewChat = () => window.location.reload()
-  const handleDeleteHistory = () => { setShowConfirmDelete(false); window.location.reload(); }
-  const handleEndChat = () => { setShowEndChatConfirm(false); onClose(); }
+  const handleNewChat = () => {
+    setMessages([])
+    setError(null)
+    setShowConfirmDelete(false)
+  }
+
+  const handleDeleteHistory = () => {
+    setMessages([])
+    setError(null)
+    setShowConfirmDelete(false)
+  }
+
+  const handleEndChat = () => {
+    setShowEndChatConfirm(false)
+    onClose()
+  }
 
   // Persistent Floating Icon when closed OR minimized
   if (!isOpen || isMinimized) {
@@ -94,7 +131,7 @@ export function AIChatbotDialog({ isOpen, onClose, onOpen }: AIChatbotDialogProp
     <div className="fixed inset-0 bg-slate-950/30 flex items-end z-50 sm:items-center justify-center p-0 sm:p-4">
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-t-3xl sm:rounded-3xl w-full sm:w-[420px] h-[92dvh] sm:h-[80dvh] sm:max-h-[650px] flex flex-col shadow-[0_20px_50px_rgba(0,0,0,0.2)] overflow-hidden">
 
-        {/* Header: Premium Gradient & Glass effect */}
+        {/* Header */}
         <div className="relative p-5 border-b border-slate-100 dark:border-slate-800 bg-gradient-to-r from-indigo-50/50 via-white to-purple-50/50 dark:from-indigo-950/20 dark:via-slate-900 dark:to-purple-950/20">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -105,7 +142,9 @@ export function AIChatbotDialog({ isOpen, onClose, onOpen }: AIChatbotDialogProp
                 <h2 className="text-base font-bold text-slate-900 dark:text-white leading-tight">CloudVault AI</h2>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <span className={`flex h-2 w-2 rounded-full ${isLoading ? 'bg-amber-400 animate-pulse' : 'bg-emerald-500'}`} />
-                  <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider">{isLoading ? 'Processing' : 'System Ready'}</span>
+                  <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider">
+                    {isLoading ? 'Processing' : 'System Ready'}
+                  </span>
                 </div>
               </div>
             </div>
@@ -166,29 +205,28 @@ export function AIChatbotDialog({ isOpen, onClose, onOpen }: AIChatbotDialogProp
             </div>
           ) : (
             <>
-              {messages.map((message, idx) => {
-                const messageText = typeof (message as any).content === 'string'
-                  ? (message as any).content
-                  : (message as any).parts?.filter((p: any) => p.type === 'text').map((p: any) => p.text).join('') || ''
-
-                const isUser = message.role === 'user'
-
-                return (
-                  <div key={idx} className={`flex ${isUser ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
-                    <div className={`max-w-[85%] px-4 py-3 rounded-2xl text-sm leading-relaxed shadow-sm ${isUser
-                      ? 'bg-indigo-600 text-white rounded-tr-none'
-                      : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-100 dark:border-slate-700 rounded-tl-none'
-                      }`}>
-                      {messageText}
-                    </div>
+              {messages.map((message, idx) => (
+                <div key={idx} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
+                  <div className={`max-w-[85%] px-4 py-3 rounded-2xl text-sm leading-relaxed shadow-sm whitespace-pre-wrap ${message.role === 'user'
+                    ? 'bg-indigo-600 text-white rounded-tr-none'
+                    : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-100 dark:border-slate-700 rounded-tl-none'
+                    }`}>
+                    {message.content}
                   </div>
-                )
-              })}
+                </div>
+              ))}
               {isLoading && (
                 <div className="flex justify-start">
                   <div className="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 px-4 py-3 rounded-2xl rounded-tl-none flex items-center gap-3">
                     <Loader size={16} className="animate-spin text-indigo-500" />
                     <span className="text-sm text-slate-500 font-medium">Assistant is thinking...</span>
+                  </div>
+                </div>
+              )}
+              {error && (
+                <div className="flex justify-start">
+                  <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 px-4 py-3 rounded-2xl rounded-tl-none text-sm text-red-600 dark:text-red-400 max-w-[85%]">
+                    ⚠️ {error}
                   </div>
                 </div>
               )}
@@ -221,7 +259,7 @@ export function AIChatbotDialog({ isOpen, onClose, onOpen }: AIChatbotDialogProp
           </p>
         </div>
 
-        {/* Modals: Simplified and matching theme */}
+        {/* Modals */}
         {(showConfirmDelete || showEndChatConfirm) && (
           <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-6 text-center">
             <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-2xl w-full max-w-xs border border-slate-200 dark:border-slate-800">
@@ -235,7 +273,7 @@ export function AIChatbotDialog({ isOpen, onClose, onOpen }: AIChatbotDialogProp
                   Confirm
                 </button>
                 <button
-                  onClick={() => { setShowConfirmDelete(false); setShowEndChatConfirm(false); }}
+                  onClick={() => { setShowConfirmDelete(false); setShowEndChatConfirm(false) }}
                   className="w-full py-2.5 bg-slate-100 dark:bg-slate-800 text-sm font-bold rounded-xl"
                 >
                   Cancel

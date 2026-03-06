@@ -4,9 +4,6 @@ import { useEffect, useState, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import { getSharedLink, type SharedLink } from "@/lib/storage"
 import { Download, FileIcon, AlertTriangle } from "lucide-react"
-import { ref, getDownloadURL } from "firebase/storage"
-import { storage, db } from "@/lib/firebase"
-import { doc, getDoc } from "firebase/firestore"
 
 function SharedLinkContent() {
     const searchParams = useSearchParams()
@@ -15,6 +12,7 @@ function SharedLinkContent() {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const [downloadUrl, setDownloadUrl] = useState<string>("")
+    const [storagePath, setStoragePath] = useState<string>("")
     const [downloading, setDownloading] = useState(false)
 
     useEffect(() => {
@@ -36,44 +34,23 @@ function SharedLinkContent() {
 
                 setLink(sharedLink)
 
-                // Strategy: try multiple sources for a fresh download URL
-                let freshUrl = ""
-
-                // 1. Try storagePath on the shared link (new links have this)
-                if (sharedLink.storagePath) {
-                    try {
-                        freshUrl = await getDownloadURL(ref(storage, sharedLink.storagePath))
-                        console.log("[shared] Got fresh URL from sharedLink.storagePath")
-                    } catch (e) {
-                        console.warn("[shared] storagePath on sharedLink failed:", e)
-                    }
+                // The fileUrl stored in Firestore already includes the Firebase download token.
+                // We use it directly — no need to call getDownloadURL (which requires auth).
+                // If fileUrl is missing, build a fallback from storagePath.
+                if (sharedLink.fileUrl) {
+                    setDownloadUrl(sharedLink.fileUrl)
+                    if (sharedLink.storagePath) setStoragePath(sharedLink.storagePath)
+                    console.log("[shared] Using stored fileUrl (includes token)")
+                } else if (sharedLink.storagePath) {
+                    // Fallback: construct URL (may not have token, require storage rules update)
+                    setStoragePath(sharedLink.storagePath)
+                    const bucket = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || 'cloudvault-cadca.firebasestorage.app'
+                    const encoded = encodeURIComponent(sharedLink.storagePath)
+                    setDownloadUrl(`https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encoded}?alt=media`)
+                    console.warn("[shared] No fileUrl stored — using path-based URL (may need token)")
+                } else {
+                    setError("File URL not found. Please ask the owner to re-share the file.")
                 }
-
-                // 2. If no storagePath on shared link, look up the file document by fileId
-                if (!freshUrl && sharedLink.fileId && sharedLink.sharedBy) {
-                    try {
-                        const fileDocRef = doc(db, `files/${sharedLink.sharedBy}/userFiles`, sharedLink.fileId)
-                        const fileSnap = await getDoc(fileDocRef)
-                        if (fileSnap.exists()) {
-                            const fileData = fileSnap.data()
-                            const storagePath = fileData.storagePath || fileData.path
-                            if (storagePath) {
-                                freshUrl = await getDownloadURL(ref(storage, storagePath))
-                                console.log("[shared] Got fresh URL from file Firestore document")
-                            }
-                        }
-                    } catch (e) {
-                        console.warn("[shared] Firestore file lookup failed:", e)
-                    }
-                }
-
-                // 3. Fall back to stored URL as last resort
-                if (!freshUrl) {
-                    freshUrl = sharedLink.fileUrl
-                    console.warn("[shared] Falling back to stored fileUrl (may be expired)")
-                }
-
-                setDownloadUrl(freshUrl)
             } catch (err) {
                 console.error("[shared] Error fetching shared link:", err)
                 setError("Failed to load the shared file. Please try again.")
@@ -108,29 +85,14 @@ function SharedLinkContent() {
         )
     }
 
-    const handleDownload = async () => {
+    const handleDownload = () => {
         if (!downloadUrl) return
         setDownloading(true)
-        try {
-            // Fetch as blob to force download (instead of opening in browser tab)
-            const response = await fetch(downloadUrl)
-            if (!response.ok) throw new Error(`HTTP ${response.status}`)
-            const blob = await response.blob()
-            const blobUrl = URL.createObjectURL(blob)
-            const a = document.createElement("a")
-            a.href = blobUrl
-            a.download = link.fileName
-            document.body.appendChild(a)
-            a.click()
-            document.body.removeChild(a)
-            URL.revokeObjectURL(blobUrl)
-        } catch (err) {
-            console.error("[shared] Download failed:", err)
-            // Fallback: just open in new tab
-            window.open(downloadUrl, "_blank")
-        } finally {
-            setDownloading(false)
-        }
+        // The fileUrl already has the Firebase download token embedded.
+        // Directly opening it avoids CORS/fetch issues entirely.
+        // The browser will download or preview it based on content-type.
+        window.open(downloadUrl, '_blank', 'noopener,noreferrer')
+        setTimeout(() => setDownloading(false), 1500)
     }
 
     const fileSizeDisplay = link.fileSize < 1024 * 1024
