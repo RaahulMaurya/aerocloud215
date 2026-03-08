@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useRef, useEffect } from 'react'
-import { Send, Loader, Minimize2, Trash2, Plus, LogOut, Crown, Sparkles, Lock } from 'lucide-react'
+import { Send, Loader, Minimize2, Trash2, Plus, LogOut, Crown, Sparkles, Lock, ChevronDown } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
 
 interface Message {
@@ -96,35 +96,7 @@ export function AIChatbotDialog({ isOpen, onClose, onOpen }: AIChatbotDialogProp
 
   // Persistent Floating Icon when closed OR minimized
   if (!isOpen || isMinimized) {
-    return (
-      <div className="fixed bottom-6 right-6 z-50">
-        <button
-          onClick={() => {
-            if (isPremium) {
-              if (isOpen) setIsMinimized(false)
-              else onOpen()
-            }
-          }}
-          disabled={!isPremium}
-          className={`w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 ${isPremium
-            ? 'bg-gradient-to-br from-primary to-accent hover:shadow-primary/40 hover:scale-110 active:scale-95 cursor-pointer'
-            : 'bg-gray-400 dark:bg-gray-700 cursor-not-allowed opacity-80'
-            }`}
-          title={isPremium ? "Open AI Assistant" : "AI Assistant (Locked)"}
-        >
-          {isPremium ? (
-            <Sparkles size={24} className="text-white" />
-          ) : (
-            <div className="relative">
-              <Sparkles size={24} className="text-white/50" />
-              <div className="absolute -top-1 -right-1 bg-gray-500 rounded-full p-0.5 border border-gray-300">
-                <Lock size={10} className="text-white" />
-              </div>
-            </div>
-          )}
-        </button>
-      </div>
-    )
+    return null
   }
 
   return (
@@ -159,8 +131,8 @@ export function AIChatbotDialog({ isOpen, onClose, onOpen }: AIChatbotDialogProp
                   FREE PLAN
                 </div>
               )}
-              <button onClick={() => setIsMinimized(true)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors text-slate-400">
-                <Minimize2 size={18} />
+              <button onClick={() => onClose()} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors text-slate-400">
+                <ChevronDown size={20} />
               </button>
             </div>
           </div>

@@ -79,7 +79,7 @@ export function Pricing({ isPricingMonthly, setIsPricingMonthly }: PricingProps)
                   <div className="mb-8 py-4 border-y border-border/30">
                     <div className="flex items-baseline gap-2 mb-2">
                       <span className="text-4xl font-bold text-foreground">
-                        {plan.price && typeof plan.price === 'number' ? `₹${plan.price}` : '₹0'}
+                        {plan.price && typeof plan.price === 'number' ? `₹${plan.price.toLocaleString('en-IN')}` : '₹0'}
                       </span>
                       {(plan.price && plan.price > 0) && <span className="text-foreground/70 text-sm">/{plan.period}</span>}
                     </div>
@@ -87,30 +87,6 @@ export function Pricing({ isPricingMonthly, setIsPricingMonthly }: PricingProps)
                   </div>
 
                   <div className="space-y-3 text-sm mb-8">
-                    <div className="flex items-start gap-3">
-                      <Check size={16} className="text-accent flex-shrink-0 mt-0.5" />
-                      <span className="text-foreground/80">{plan.links === 999999 ? "Unlimited" : plan.links} links/mo</span>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <Check size={16} className="text-accent flex-shrink-0 mt-0.5" />
-                      <span className="text-foreground/80">{plan.bandwidth === 999999 ? "Unlimited" : `${plan.bandwidth}GB`} bandwidth</span>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <Check size={16} className="text-accent flex-shrink-0 mt-0.5" />
-                      <span className="text-foreground/80">{plan.expirationDays === 0 ? "Never" : `${plan.expirationDays}d`} expiry</span>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <Check size={16} className="text-accent flex-shrink-0 mt-0.5" />
-                      <span className="text-foreground/80">
-                        {plan.bgRemovalLimit === 999999 ? "Unlimited" : plan.bgRemovalLimit} bg removals/mo
-                      </span>
-                    </div>
-                    {plan.vault && (
-                      <div className="flex items-start gap-3 pt-3 border-t border-border/30">
-                        <Check size={16} className="text-green-500 flex-shrink-0 mt-0.5" />
-                        <span className="text-foreground/80">Personal Vault</span>
-                      </div>
-                    )}
                     {plan.chatbot && (
                       <div className="flex items-start gap-3">
                         <Check size={16} className="text-green-500 flex-shrink-0 mt-0.5" />

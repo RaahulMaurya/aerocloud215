@@ -163,15 +163,12 @@ export function StorageOverview({ user }: { user: UserData }) {
             <div className="space-y-3 mb-8">
               {(plan === "free" ? [
                 "5 GB Cloud Storage",
-                "Advanced Sharing",
-                "5 Background Removals/mo"
+                "Advanced Sharing"
               ] : plan === "basic" ? [
                 "50 GB Cloud Storage",
-                "Personal Vault",
-                "50 Background Removals/mo"
+                "Personal Vault"
               ] : [
                 "Massive Cloud Storage",
-                "Unlimited Background Removals",
                 "Huge Expiry Limits"
               ]).map((feature, i) => (
                 <div key={i} className="flex items-center gap-2.5">
