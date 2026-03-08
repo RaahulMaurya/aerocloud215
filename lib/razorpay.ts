@@ -109,18 +109,25 @@ export const PLANS: Record<string, Plan> = {
     price: 0,
     period: "forever",
   },
+  starter: {
+    id: "starter",
+    name: "Starter",
+    storage: 50,
+    price: 299,
+    period: "monthly",
+  },
   pro: {
     id: "pro",
     name: "Pro",
-    storage: 50,
-    price: 1, // ₹1
+    storage: 200,
+    price: 699,
     period: "monthly",
   },
-  business: {
-    id: "business",
-    name: "Business",
-    storage: 200,
-    price: 2, // ₹2
+  enterprise: {
+    id: "enterprise",
+    name: "Enterprise",
+    storage: 1024,
+    price: 1999,
     period: "monthly",
   },
 }

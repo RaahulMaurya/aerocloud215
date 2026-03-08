@@ -20,10 +20,10 @@ import { auth, db } from "@/lib/firebase"
 import { UNIVERSAL_PLANS } from "@/lib/razorpay"
 
 const PLANS = {
-  free: { id: "free", storage: 1 },
-  starter: { id: "starter", storage: 5 },
-  pro: { id: "pro", storage: 10 },
-  enterprise: { id: "enterprise", storage: 50 },
+  free: { id: "free", storage: 5 },
+  starter: { id: "starter", storage: 50 },
+  pro: { id: "pro", storage: 200 },
+  enterprise: { id: "enterprise", storage: 1024 },
 }
 
 interface UserData {

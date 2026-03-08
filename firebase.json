@@ -1,12 +1,16 @@
 {
   "hosting": {
-    "source": ".",
-    "frameworksBackend": {},
+    "public": "public",
     "ignore": [
       "firebase.json",
-      "functions/**",
       "**/.*",
       "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
     ]
   },
   "functions": [
