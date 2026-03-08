@@ -27,25 +27,49 @@ export function PlansDisplay() {
       highlight: false,
     },
     {
-      id: 'starter',
-      name: 'Starter',
-      price: 299,
+      id: 'basic',
+      name: 'Basic',
+      price: 49,
       period: 'monthly',
-      description: 'Perfect for personal use',
+      description: 'For individuals & small teams',
       highlight: false,
     },
     {
-      id: 'pro',
-      name: 'Pro',
-      price: 699,
+      id: 'lite',
+      name: 'Lite',
+      price: 89,
       period: 'monthly',
-      description: 'For power users',
+      description: 'For moderate storage needs',
+      highlight: false,
+    },
+    {
+      id: 'standard',
+      name: 'Standard',
+      price: 189,
+      period: 'monthly',
+      description: 'For growing teams',
       highlight: true,
     },
     {
-      id: 'enterprise',
-      name: 'Enterprise',
-      price: 1999,
+      id: 'plus',
+      name: 'Plus',
+      price: 299,
+      period: 'monthly',
+      description: 'Advanced storage capacity',
+      highlight: false,
+    },
+    {
+      id: 'premium',
+      name: 'Premium',
+      price: 499,
+      period: 'monthly',
+      description: 'For large organizations',
+      highlight: false,
+    },
+    {
+      id: 'premium_plus',
+      name: 'Premium Plus',
+      price: 11990,
       period: 'monthly',
       description: 'Ultimate storage power',
       highlight: false,
@@ -131,7 +155,7 @@ export function PlansDisplay() {
                   <div>
                     <h3 className="text-2xl font-bold text-foreground mb-2 flex items-center gap-2">
                       {plan.name}
-                      {plan.id === 'enterprise' && <Crown className="w-5 h-5 text-yellow-500" />}
+                      {plan.id === 'premium' && <Crown className="w-5 h-5 text-yellow-500" />}
                     </h3>
                     <p className="text-sm text-foreground/60">{plan.description}</p>
                   </div>
