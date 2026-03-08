@@ -146,33 +146,33 @@ export function StorageOverview({ user }: { user: UserData }) {
                 <Crown className="w-6 h-6 text-yellow-500 dark:text-yellow-400" />
               </div>
               <span className="text-xs font-bold px-2 py-1 bg-gradient-to-r from-yellow-400 to-amber-600 text-white rounded text-[10px] uppercase tracking-wider shadow-sm">
-                {plan === "free" ? "STARTER PLAN" : plan === "starter" ? "PRO PLAN" : "ENTERPRISE PLAN"}
+                {plan === "free" ? "FREE PLAN" : "PREMIUM TIER"}
               </span>
             </div>
 
             <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Need More Space?</h3>
             <p className="text-sm text-gray-600 dark:text-gray-300 mb-6 leading-relaxed font-medium">
               {plan === "free"
-                ? "Unlock your creative potential. Upgrade to Starter and get 50GB of premium secure storage."
-                : plan === "starter"
-                  ? "Go Pro for 200GB storage and exclusive AI features."
-                  : "Scale up to Enterprise for 1TB storage and unlimited possibilities."}
+                ? "Unlock your creative potential. Upgrade to Basic and get 50GB of premium secure storage."
+                : plan === "premium"
+                  ? "You are on our best tier! Scale to Premium Plus for 30TB."
+                  : "Upgrade now to expand your storage and access unlimited features."}
             </p>
 
             {/* Feature Highlights */}
             <div className="space-y-3 mb-8">
               {(plan === "free" ? [
+                "5 GB Cloud Storage",
+                "Advanced Sharing",
+                "5 Background Removals/mo"
+              ] : plan === "basic" ? [
                 "50 GB Cloud Storage",
-                "Personal Vault Access",
+                "Personal Vault",
                 "50 Background Removals/mo"
-              ] : plan === "starter" ? [
-                "200 GB Cloud Storage",
-                "AI Chatbot Assistance",
-                "500 Background Removals/mo"
               ] : [
-                "1 TB Cloud Storage",
+                "Massive Cloud Storage",
                 "Unlimited Background Removals",
-                "Links Never Expire"
+                "Huge Expiry Limits"
               ]).map((feature, i) => (
                 <div key={i} className="flex items-center gap-2.5">
                   <div className="w-5 h-5 rounded-full bg-primary/10 dark:bg-white/10 flex items-center justify-center flex-shrink-0">

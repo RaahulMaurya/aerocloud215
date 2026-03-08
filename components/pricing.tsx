@@ -22,9 +22,9 @@ export function Pricing({ isPricingMonthly, setIsPricingMonthly }: PricingProps)
 
   const plans = [
     UNIVERSAL_PLANS.free,
-    UNIVERSAL_PLANS.starter,
-    UNIVERSAL_PLANS.pro,
-    UNIVERSAL_PLANS.enterprise,
+    UNIVERSAL_PLANS.basic,
+    UNIVERSAL_PLANS.standard,
+    UNIVERSAL_PLANS.premium,
   ]
 
   const getPrice = (priceKey: string) => {
@@ -50,12 +50,12 @@ export function Pricing({ isPricingMonthly, setIsPricingMonthly }: PricingProps)
           {mounted && plans.map((plan, i) => (
             <div
               key={i}
-              className={`relative rounded-2xl transition-all duration-300 overflow-hidden h-full ${(plan.id === "enterprise")
-                  ? "lg:col-span-1 lg:row-span-2 lg:scale-105 bg-gradient-to-br from-primary/10 to-accent/10 border-2 border-primary shadow-xl"
-                  : "bg-card border border-border hover:border-primary/50 hover:shadow-lg"
+              className={`relative rounded-2xl transition-all duration-300 overflow-hidden h-full ${(plan.id === "premium")
+                ? "lg:col-span-1 lg:row-span-2 lg:scale-105 bg-gradient-to-br from-primary/10 to-accent/10 border-2 border-primary shadow-xl"
+                : "bg-card border border-border hover:border-primary/50 hover:shadow-lg"
                 }`}
             >
-              {(plan.id === "enterprise") && (
+              {(plan.id === "premium") && (
                 <div className="absolute -top-3 right-4">
                   <span className="bg-gradient-to-r from-primary to-accent text-primary-foreground px-3 py-1 rounded-full text-xs font-bold inline-flex items-center gap-1">
                     <Crown size={12} />
@@ -70,9 +70,9 @@ export function Pricing({ isPricingMonthly, setIsPricingMonthly }: PricingProps)
                     <h3 className="text-2xl font-bold text-foreground capitalize mb-2">{plan.name}</h3>
                     <p className="text-foreground/70 text-sm leading-relaxed">
                       {plan.id === "free" && "Perfect for getting started"}
-                      {plan.id === "starter" && "For individuals & small teams"}
-                      {plan.id === "pro" && "For growing teams"}
-                      {plan.id === "enterprise" && "For large organizations"}
+                      {plan.id === "basic" && "For individuals & small teams"}
+                      {plan.id === "standard" && "For growing teams"}
+                      {plan.id === "premium" && "For large organizations"}
                     </p>
                   </div>
 
@@ -122,9 +122,9 @@ export function Pricing({ isPricingMonthly, setIsPricingMonthly }: PricingProps)
 
                 <button
                   onClick={() => router.push("/pricing")}
-                  className={`w-full py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 ${(plan.id === "enterprise")
-                      ? "bg-gradient-to-r from-primary to-accent text-primary-foreground hover:shadow-lg"
-                      : "bg-muted text-foreground hover:bg-muted/80"
+                  className={`w-full py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 ${(plan.id === "premium")
+                    ? "bg-gradient-to-r from-primary to-accent text-primary-foreground hover:shadow-lg"
+                    : "bg-muted text-foreground hover:bg-muted/80"
                     }`}
                 >
                   {plan.id === "free" ? "Get Started" : "Upgrade Now"}
