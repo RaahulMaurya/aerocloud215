@@ -76,36 +76,7 @@ export function PlansDisplay() {
     },
   ]
 
-  const features = [
-    { name: 'Cloud Storage', key: 'storage' },
-    { name: 'File to URL Links/month', key: 'links' },
-    { name: 'Bandwidth/month', key: 'bandwidth' },
-    { name: 'Link Expiry', key: 'expirationDays' },
-    { name: 'Personal Vault', key: 'vault' },
-    { name: 'File to URL Feature', key: 'fileToURL' },
 
-    { name: 'AI Chatbot', key: 'chatbot' },
-    { name: 'Background Removals', key: 'bgRemovalLimit' },
-  ]
-
-  const formatValue = (key: string, value: any) => {
-    if (typeof value === 'boolean') {
-      return value ? <Check className="w-5 h-5 text-green-500" /> : <X className="w-5 h-5 text-red-400" />
-    }
-    if (key === 'storage') return `${value} GB`
-    if (key === 'bandwidth') return value === 999999 ? 'Unlimited' : `${value} GB`
-    if (key === 'bandwidth') return value === 999999 ? 'Unlimited' : `${value} GB`
-    if (key === 'links') return value === 999999 ? 'Unlimited' : value
-    if (key === 'bgRemovalLimit') return value === 999999 ? 'Unlimited' : `${value}/mo`
-    if (key === 'expirationDays') {
-      if (value === 0) return 'Never ✨'
-      if (value === 2) return '2 days'
-      if (value === 30) return '30 days'
-      if (value === 365) return '365 days'
-      return `${value} days`
-    }
-    return value
-  }
 
   return (
     <div className="w-full py-8 px-4 sm:px-6 lg:px-8">
@@ -171,6 +142,52 @@ export function PlansDisplay() {
                     )}
                   </div>
 
+                  {/* Features */}
+                  <div className="space-y-4 pt-4 border-t border-border/10">
+                    <div className="flex items-start gap-3">
+                      <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
+                      <span className="text-sm font-medium text-foreground/80">
+                        {planData.storage >= 1024 ? `${planData.storage / 1024}TB` : `${planData.storage}GB`} Storage
+                      </span>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
+                      <span className="text-sm font-medium text-foreground/80">
+                        {planData.links === 999999 ? 'Unlimited' : planData.links} File to URL Links/month
+                      </span>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
+                      <span className="text-sm font-medium text-foreground/80">
+                        {planData.bandwidth === 999999 ? 'Unlimited' : `${planData.bandwidth}GB`} Bandwidth/month
+                      </span>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
+                      <span className="text-sm font-medium text-foreground/80">
+                        {planData.expirationDays === 0 ? 'Never Expires ✨' : `${planData.expirationDays} Days Link Expiry`}
+                      </span>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
+                      <span className="text-sm font-medium text-foreground/80">
+                        {planData.bgRemovalLimit === 999999 ? 'Unlimited' : planData.bgRemovalLimit} Background Removals
+                      </span>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      {planData.vault ? <Check className="w-5 h-5 text-green-500 flex-shrink-0" /> : <X className="w-5 h-5 text-foreground/30 flex-shrink-0" />}
+                      <span className={`text-sm font-medium ${planData.vault ? 'text-foreground/80' : 'text-foreground/40'}`}>Personal Vault</span>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      {planData.fileToURL ? <Check className="w-5 h-5 text-green-500 flex-shrink-0" /> : <X className="w-5 h-5 text-foreground/30 flex-shrink-0" />}
+                      <span className={`text-sm font-medium ${planData.fileToURL ? 'text-foreground/80' : 'text-foreground/40'}`}>File to URL Feature</span>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      {planData.chatbot ? <Check className="w-5 h-5 text-green-500 flex-shrink-0" /> : <X className="w-5 h-5 text-foreground/30 flex-shrink-0" />}
+                      <span className={`text-sm font-medium ${planData.chatbot ? 'text-foreground/80' : 'text-foreground/40'}`}>AI Chatbot</span>
+                    </div>
+                  </div>
+
                   {/* CTA Button */}
                   <Button
                     disabled={isCurrentPlan || (plan.id === 'free' && isDowngrading)}
@@ -217,39 +234,7 @@ export function PlansDisplay() {
           })}
         </div>
 
-        {/* Features Comparison Table */}
-        <div className="bg-card border border-border/50 rounded-2xl overflow-hidden mb-12">
-          <div className="overflow-x-auto scrollbar-hide pb-2">
-            <table className="w-full min-w-[800px]">
-              <thead>
-                <tr className="bg-muted/50 border-b border-border/50">
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">Feature</th>
-                  {plans.map((plan) => (
-                    <th key={plan.id} className="px-6 py-4 text-center text-sm font-semibold text-foreground">
-                      {plan.name}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {features.map((feature, idx) => (
-                  <tr key={feature.key} className={`border-b border-border/50 ${idx % 2 === 0 ? 'bg-background/50' : ''}`}>
-                    <td className="px-6 py-4 text-sm font-medium text-foreground">{feature.name}</td>
-                    {plans.map((plan) => {
-                      const planData = UNIVERSAL_PLANS[plan.id as keyof typeof UNIVERSAL_PLANS]
-                      const value = planData[feature.key as keyof typeof planData]
-                      return (
-                        <td key={`${plan.id}-${feature.key}`} className="px-6 py-4 text-center text-sm">
-                          {formatValue(feature.key, value)}
-                        </td>
-                      )
-                    })}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+
 
         {/* Footer */}
         <div className="mt-12 text-center">
