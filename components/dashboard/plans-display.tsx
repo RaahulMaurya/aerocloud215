@@ -134,7 +134,7 @@ export function PlansDisplay() {
                   {/* Price */}
                   <div>
                     <div className="text-4xl font-bold text-foreground">
-                      {plan.price === 0 ? 'Free' : `₹${plan.price}`}
+                      {plan.price === 0 ? 'Free' : `₹${plan.price.toLocaleString('en-IN')}`}
                     </div>
                     {plan.price > 0 && <p className="text-sm text-foreground/60">/{plan.period}</p>}
                     {plan.period === 'forever' && plan.price === 0 && (
@@ -149,38 +149,6 @@ export function PlansDisplay() {
                       <span className="text-sm font-medium text-foreground/80">
                         {planData.storage >= 1024 ? `${planData.storage / 1024}TB` : `${planData.storage}GB`} Storage
                       </span>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
-                      <span className="text-sm font-medium text-foreground/80">
-                        {planData.links === 999999 ? 'Unlimited' : planData.links} File to URL Links/month
-                      </span>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
-                      <span className="text-sm font-medium text-foreground/80">
-                        {planData.bandwidth === 999999 ? 'Unlimited' : `${planData.bandwidth}GB`} Bandwidth/month
-                      </span>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
-                      <span className="text-sm font-medium text-foreground/80">
-                        {planData.expirationDays === 0 ? 'Never Expires ✨' : `${planData.expirationDays} Days Link Expiry`}
-                      </span>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
-                      <span className="text-sm font-medium text-foreground/80">
-                        {planData.bgRemovalLimit === 999999 ? 'Unlimited' : planData.bgRemovalLimit} Background Removals
-                      </span>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      {planData.vault ? <Check className="w-5 h-5 text-green-500 flex-shrink-0" /> : <X className="w-5 h-5 text-foreground/30 flex-shrink-0" />}
-                      <span className={`text-sm font-medium ${planData.vault ? 'text-foreground/80' : 'text-foreground/40'}`}>Personal Vault</span>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      {planData.fileToURL ? <Check className="w-5 h-5 text-green-500 flex-shrink-0" /> : <X className="w-5 h-5 text-foreground/30 flex-shrink-0" />}
-                      <span className={`text-sm font-medium ${planData.fileToURL ? 'text-foreground/80' : 'text-foreground/40'}`}>File to URL Feature</span>
                     </div>
                     <div className="flex items-start gap-3">
                       {planData.chatbot ? <Check className="w-5 h-5 text-green-500 flex-shrink-0" /> : <X className="w-5 h-5 text-foreground/30 flex-shrink-0" />}

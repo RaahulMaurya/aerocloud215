@@ -66,11 +66,8 @@ export function DashboardNav({ user, onNavigate, onSearch, onChatOpen }: Dashboa
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 cursor-pointer" onClick={() => router.push("/dashboard")}>
-
-              <img src="/aerocloud-logo.png" alt="AeroCloud" className="h-[25px] sm:h-[40px] w-auto mt-1 ml-1" />
+              <span className="text-2xl sm:text-3xl font-bold tracking-tighter text-foreground ml-1">aerocloud</span>
             </div>
-
-
           </div>
 
           <div className="hidden md:flex items-center gap-3">
@@ -103,6 +100,14 @@ export function DashboardNav({ user, onNavigate, onSearch, onChatOpen }: Dashboa
 
 
             <button
+              onClick={onChatOpen}
+              className="p-2.5 hover:bg-muted rounded-lg transition hover:scale-110 border border-transparent hover:border-border/50"
+              title="AI Assistant"
+            >
+              <MessageCircle size={20} className="text-foreground/70 hover:text-primary transition" />
+            </button>
+
+            <button
               onClick={() => router.push("/support")}
               className="p-2.5 hover:bg-muted rounded-lg transition hover:scale-110 border border-transparent hover:border-border/50"
               title="Support"
@@ -113,14 +118,23 @@ export function DashboardNav({ user, onNavigate, onSearch, onChatOpen }: Dashboa
             <button
               onClick={() => onNavigate?.("settings")}
               className="hidden sm:flex p-2.5 hover:bg-muted rounded-lg transition hover:scale-110"
+              title="Settings"
             >
               <Settings size={20} className="text-foreground/70 hover:text-primary transition" />
             </button>
 
             {mounted && (
-
-
-              <span className="hidden"></span>
+              <button
+                onClick={handleThemeToggle}
+                className="hidden sm:flex p-2.5 hover:bg-muted rounded-lg transition hover:scale-110"
+                title="Toggle Theme"
+              >
+                {theme === "dark" ? (
+                  <Sun size={20} className="text-foreground/70 hover:text-primary transition" />
+                ) : (
+                  <Moon size={20} className="text-foreground/70 hover:text-primary transition" />
+                )}
+              </button>
             )}
 
             <div className="hidden sm:flex items-center gap-3 pl-3 border-l border-border/50">
