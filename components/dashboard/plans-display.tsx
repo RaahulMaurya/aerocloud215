@@ -117,7 +117,7 @@ export function PlansDisplay() {
         </div>
 
         {/* Plans Grid */}
-        <div className="grid md:grid-cols-4 gap-6 mb-12">
+        <div className="flex overflow-x-auto pb-8 gap-6 snap-x -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide mb-12">
           {plans.map((plan) => {
             const planData = UNIVERSAL_PLANS[plan.id as keyof typeof UNIVERSAL_PLANS]
             const isCurrentPlan = currentPlan === plan.id
@@ -126,7 +126,7 @@ export function PlansDisplay() {
             return (
               <div
                 key={plan.id}
-                className={`relative rounded-2xl border transition-all ${plan.highlight
+                className={`relative rounded-2xl border transition-all min-w-[300px] sm:min-w-[320px] flex-shrink-0 snap-center ${plan.highlight
                   ? 'border-primary bg-gradient-to-br from-primary/10 to-accent/10 shadow-2xl scale-105'
                   : 'border-border/50 bg-card hover:border-primary/50'
                   } ${isCurrentPlan ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : ''}`}
