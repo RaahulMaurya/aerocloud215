@@ -33,7 +33,7 @@ export const UNIVERSAL_PLANS: Record<string, UniversalPlan> = {
     bgRemovalLimit: 5,
     bandwidth: 1,
     expirationDays: 2,
-    chatbot: true, // Chatbot accessible in all plans
+    chatbot: true, 
     vault: false,
     fileToURL: false,
   },

@@ -191,17 +191,6 @@ export function AIChatbotDialog({ isOpen, onClose, onOpen }: AIChatbotDialogProp
               <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
                 I can help you analyze storage, find specific files, or give you organization tips for your CloudVault.
               </p>
-              {!isPremium && (
-                <div className="mt-8 p-6 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm w-full">
-                  <p className="text-amber-600 dark:text-amber-400 font-bold flex items-center justify-center gap-2 mb-2 text-sm">
-                    <Crown size={16} /> UPGRADE REQUIRED
-                  </p>
-                  <p className="text-slate-500 text-xs mb-5 italic">AI Assistant is exclusive to our Pro and Enterprise partners.</p>
-                  <button className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl transition-all shadow-md shadow-indigo-200 dark:shadow-none">
-                    View Pricing
-                  </button>
-                </div>
-              )}
             </div>
           ) : (
             <>

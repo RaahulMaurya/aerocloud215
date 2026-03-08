@@ -67,9 +67,7 @@ export function DashboardNav({ user, onNavigate, onSearch, onChatOpen }: Dashboa
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 cursor-pointer" onClick={() => router.push("/dashboard")}>
 
-              <span className="text-4xl font-extrabold text-foreground hidden md:inline font-[family-name:var(--font-comfortaa)] lowercase tracking-tight">
-                aerocloud
-              </span>
+              <img src="/aerocloud-logo.png" alt="AeroCloud" className="h-[25px] sm:h-[40px] w-auto mt-1 ml-1" />
             </div>
 
 
@@ -122,22 +120,7 @@ export function DashboardNav({ user, onNavigate, onSearch, onChatOpen }: Dashboa
             {mounted && (
 
 
-
-
-
-              <button
-                onClick={handleThemeToggle}
-                className="p-2.5 hover:bg-muted rounded-lg transition hover:scale-110 border border-transparent hover:border-border/50"
-                title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
-              >
-                {theme === "dark" ? (
-                  <Sun size={20} className="text-foreground/70 hover:text-primary transition" />
-                ) : (
-                  <Moon size={20} className="text-foreground/70 hover:text-primary transition" />
-                )}
-              </button>
-
-
+              <span className="hidden"></span>
             )}
 
             <div className="hidden sm:flex items-center gap-3 pl-3 border-l border-border/50">
