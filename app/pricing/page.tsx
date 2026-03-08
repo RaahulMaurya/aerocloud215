@@ -10,7 +10,7 @@ import { useAuth } from "@/contexts/auth-context"
 export default function PricingPage() {
   const router = useRouter()
   const { user } = useAuth()
-  const [hoveredPlan, setHoveredPlan] = useState<string | null>("enterprise")
+  const [hoveredPlan, setHoveredPlan] = useState<string | null>("premium")
   const [mounted, setMounted] = useState(false)
   const [selectedPlanId, setSelectedPlanId] = useState<string>("")
   const [showPaymentModal, setShowPaymentModal] = useState(false)
@@ -19,7 +19,7 @@ export default function PricingPage() {
     setMounted(true)
   }, [])
 
-  const planOrder = ["free", "starter", "pro", "enterprise"]
+  const planOrder = ["free", "basic", "lite", "standard", "plus", "premium", "premium_plus"]
   const plans = planOrder.map(planId => ({
     ...UNIVERSAL_PLANS[planId as keyof typeof UNIVERSAL_PLANS],
     id: planId,
@@ -70,26 +70,26 @@ export default function PricingPage() {
 
       {/* Pricing Cards */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="flex overflow-x-auto pb-8 gap-6 snap-x -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
           {mounted && plans.map((plan, index) => (
             <div
               key={plan.id}
               onMouseEnter={() => setHoveredPlan(plan.id)}
-              onMouseLeave={() => setHoveredPlan("enterprise")}
-              className={`relative rounded-2xl border-2 transition-all duration-300 ${plan.id === "enterprise"
+              onMouseLeave={() => setHoveredPlan("premium")}
+              className={`relative rounded-2xl border-2 transition-all duration-300 min-w-[300px] sm:min-w-[320px] flex-shrink-0 snap-center ${plan.id === "premium"
                 ? "border-primary bg-gradient-to-br from-primary/10 to-accent/5 shadow-2xl transform scale-100"
                 : hoveredPlan === plan.id
                   ? "border-primary/60 bg-card shadow-lg transform scale-[1.02]"
                   : "border-border bg-card hover:border-primary/40"
                 } overflow-hidden`}
               style={{
-                animation: mounted && plan.id === "enterprise"
+                animation: mounted && plan.id === "premium"
                   ? `float 3s ease-in-out infinite`
                   : "none"
               }}
             >
               {/* Badge */}
-              {plan.id === "enterprise" && (
+              {plan.id === "premium" && (
                 <div className="absolute top-0 right-0 bg-gradient-to-r from-primary to-accent text-primary-foreground px-4 py-1 rounded-bl-lg text-sm font-bold flex items-center gap-1">
                   <Crown size={16} />
                   Most Popular
@@ -129,7 +129,7 @@ export default function PricingPage() {
                       setShowPaymentModal(true)
                     }
                   }}
-                  className={`w-full py-3 rounded-lg font-semibold transition-all duration-300 mb-8 flex items-center justify-center gap-2 ${plan.id === "enterprise"
+                  className={`w-full py-3 rounded-lg font-semibold transition-all duration-300 mb-8 flex items-center justify-center gap-2 ${plan.id === "premium"
                     ? "bg-gradient-to-r from-primary to-accent text-primary-foreground hover:shadow-lg hover:scale-105"
                     : plan.id === "free"
                       ? "bg-muted text-foreground hover:bg-muted/80"
@@ -143,7 +143,9 @@ export default function PricingPage() {
                 {/* Features */}
                 <div className="space-y-3 border-t border-border pt-6">
                   <div className="flex items-center gap-3">
-                    <span className="text-2xl font-bold text-primary">{plan.storage}GB</span>
+                    <span className="text-2xl font-bold text-primary">
+                      {plan.storage >= 1024 ? `${plan.storage / 1024}TB` : `${plan.storage}GB`}
+                    </span>
                     <span className="text-foreground/70">Storage</span>
                   </div>
                   <div className="flex items-center gap-3">
@@ -219,7 +221,9 @@ export default function PricingPage() {
                   {plans.map(plan => (
                     <td key={plan.id} className="text-center py-4 px-4">
                       {feature.key === "storage" && (
-                        <span className="font-semibold text-foreground">{plan.storage}GB</span>
+                        <span className="font-semibold text-foreground">
+                          {plan.storage >= 1024 ? `${plan.storage / 1024}TB` : `${plan.storage}GB`}
+                        </span>
                       )}
                       {feature.key === "links" && (
                         <span className="font-semibold text-foreground">

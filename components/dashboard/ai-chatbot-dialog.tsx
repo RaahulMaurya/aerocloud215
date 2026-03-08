@@ -26,7 +26,7 @@ export function AIChatbotDialog({ isOpen, onClose, onOpen }: AIChatbotDialogProp
   const [showConfirmDelete, setShowConfirmDelete] = useState(false)
   const [showEndChatConfirm, setShowEndChatConfirm] = useState(false)
 
-  const isPremium = userData?.subscriptionPlan === 'pro' || userData?.subscriptionPlan === 'enterprise'
+  const isPremium = true // Chatbot accessible in all plans
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -54,7 +54,7 @@ export function AIChatbotDialog({ isOpen, onClose, onOpen }: AIChatbotDialogProp
           userContext: isPremium ? {
             displayName: userData?.displayName,
             email: userData?.email,
-            subscriptionPlan: userData?.subscriptionPlan || 'pro',
+            subscriptionPlan: userData?.subscriptionPlan || 'free',
             planExpiry: userData?.planExpiry,
             storageUsed: userData?.storageUsed,
             maxStorage: userData?.maxStorage

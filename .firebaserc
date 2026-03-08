@@ -1,5 +1,15 @@
 {
   "projects": {
     "default": "cloudvault-cadca"
-  }
+  },
+  "targets": {
+    "cloudvault-cadca": {
+      "hosting": {
+        "aerocloud": [
+          "aerocloud"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }
