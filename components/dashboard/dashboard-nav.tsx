@@ -7,6 +7,8 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/auth-context"
 
+import { useTheme } from "next-themes"
+
 interface DashboardNavProps {
   user: {
     displayName: string
@@ -19,7 +21,8 @@ interface DashboardNavProps {
 
 export function DashboardNav({ user, onNavigate, onSearch, onChatOpen }: DashboardNavProps) {
   const router = useRouter()
-  const { logOut, userData } = useAuth()
+  const { logOut, userData, updateTheme } = useAuth()
+  const { theme, setTheme } = useTheme()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
@@ -48,6 +51,15 @@ export function DashboardNav({ user, onNavigate, onSearch, onChatOpen }: Dashboa
     e.preventDefault()
     if (searchQuery.trim() && onSearch) {
       onSearch(searchQuery)
+    }
+  }
+
+  const handleThemeToggle = async () => {
+    const newTheme = theme === "dark" ? "light" : "dark"
+    console.log("Theme toggle clicked, changing to:", newTheme)
+    setTheme(newTheme)
+    if (updateTheme) {
+      await updateTheme(newTheme)
     }
   }
 
