@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { Cloud, Settings, Menu, X, LogOut, Upload, FolderPlus, Star, Activity, Link2, HelpCircle, MessageCircle, Sparkles } from "lucide-react"
+import { Cloud, Settings, Menu, X, LogOut, Upload, FolderPlus, Star, Activity, Link2, HelpCircle, MessageCircle, Sparkles, Sun, Moon } from "lucide-react"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/auth-context"
@@ -117,6 +117,19 @@ export function DashboardNav({ user, onNavigate, onSearch, onChatOpen }: Dashboa
               <Settings size={20} className="text-foreground/70 hover:text-primary transition" />
             </button>
 
+            {mounted && (
+              <button
+                onClick={handleThemeToggle}
+                className="hidden sm:flex p-2.5 hover:bg-muted rounded-lg transition hover:scale-110"
+                title="Toggle Theme"
+              >
+                {theme === "dark" ? (
+                  <Sun size={20} className="text-foreground/70 hover:text-primary transition" />
+                ) : (
+                  <Moon size={20} className="text-foreground/70 hover:text-primary transition" />
+                )}
+              </button>
+            )}
 
             <div className="hidden sm:flex items-center gap-3 pl-3 border-l border-border/50">
               <div className="w-9 h-9 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center shadow-md">
