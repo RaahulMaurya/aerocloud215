@@ -218,9 +218,9 @@ export function PlansDisplay() {
         </div>
 
         {/* Features Comparison Table */}
-        <div className="bg-card border border-border/50 rounded-2xl overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
+        <div className="bg-card border border-border/50 rounded-2xl overflow-hidden mb-12">
+          <div className="overflow-x-auto scrollbar-hide pb-2">
+            <table className="w-full min-w-[800px]">
               <thead>
                 <tr className="bg-muted/50 border-b border-border/50">
                   <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">Feature</th>
