@@ -2,11 +2,10 @@
 
 import type React from "react"
 
-import { Cloud, Settings, Menu, X, LogOut, Upload, FolderPlus, Star, Activity, Link2, Moon, Sun, HelpCircle, MessageCircle } from "lucide-react"
+import { Cloud, Settings, Menu, X, LogOut, Upload, FolderPlus, Star, Activity, Link2, HelpCircle, MessageCircle, Sparkles } from "lucide-react"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/contexts/auth-context"
-import { useTheme } from "next-themes"
 
 interface DashboardNavProps {
   user: {
@@ -20,8 +19,7 @@ interface DashboardNavProps {
 
 export function DashboardNav({ user, onNavigate, onSearch, onChatOpen }: DashboardNavProps) {
   const router = useRouter()
-  const { logOut, userData, updateTheme } = useAuth()
-  const { theme, setTheme } = useTheme()
+  const { logOut, userData } = useAuth()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
@@ -53,12 +51,6 @@ export function DashboardNav({ user, onNavigate, onSearch, onChatOpen }: Dashboa
     }
   }
 
-  const handleThemeToggle = async () => {
-    const newTheme = theme === "dark" ? "light" : "dark"
-    console.log("Theme toggle clicked, changing to:", newTheme)
-    setTheme(newTheme)
-    await updateTheme(newTheme)
-  }
 
   return (
     <nav className="bg-gradient-to-r from-card via-card to-muted/20 border-b border-border/50 sticky top-0 z-40 backdrop-blur-md">
@@ -101,10 +93,12 @@ export function DashboardNav({ user, onNavigate, onSearch, onChatOpen }: Dashboa
 
             <button
               onClick={onChatOpen}
-              className="p-2.5 hover:bg-muted rounded-lg transition hover:scale-110 border border-transparent hover:border-border/50"
+              className="relative p-2.5 rounded-xl transition-all duration-300 hover:scale-110 active:scale-95 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 hover:from-indigo-500/20 hover:to-purple-500/20 border border-indigo-500/20 shadow-sm hover:shadow-indigo-500/20 group overflow-hidden"
               title="AI Assistant"
             >
-              <MessageCircle size={20} className="text-foreground/70 hover:text-primary transition" />
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-[100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+              <Sparkles size={22} className="text-indigo-600 dark:text-indigo-400 drop-shadow-sm group-hover:rotate-12 transition-transform duration-300" />
+              <div className="absolute top-1 right-1 w-2 h-2 rounded-full bg-emerald-500 border-2 border-card ring-1 ring-emerald-500/20 animate-pulse" />
             </button>
 
             <button
@@ -123,19 +117,6 @@ export function DashboardNav({ user, onNavigate, onSearch, onChatOpen }: Dashboa
               <Settings size={20} className="text-foreground/70 hover:text-primary transition" />
             </button>
 
-            {mounted && (
-              <button
-                onClick={handleThemeToggle}
-                className="hidden sm:flex p-2.5 hover:bg-muted rounded-lg transition hover:scale-110"
-                title="Toggle Theme"
-              >
-                {theme === "dark" ? (
-                  <Sun size={20} className="text-foreground/70 hover:text-primary transition" />
-                ) : (
-                  <Moon size={20} className="text-foreground/70 hover:text-primary transition" />
-                )}
-              </button>
-            )}
 
             <div className="hidden sm:flex items-center gap-3 pl-3 border-l border-border/50">
               <div className="w-9 h-9 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center shadow-md">
